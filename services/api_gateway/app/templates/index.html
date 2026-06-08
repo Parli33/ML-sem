@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Главная{% endblock %}
+{% block content %}
+  <div class="p-5 bg-white rounded shadow-sm">
+    <h1 class="h2">Добро пожаловать, {{ current_user.username }}!</h1>
+    <p class="mb-0">Вы вошли в защищённую часть Flask-приложения.</p>
+  </div>
+{% endblock %}

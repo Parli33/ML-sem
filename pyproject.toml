@@ -20,4 +20,4 @@ dev = [
 ]
 
 [tool.uv.workspace]
-members = ["services/ml_service"]
+members = ["services/api_gateway", "services/ml_service"]
