@@ -4,10 +4,11 @@ ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
 
 WORKDIR /app
 
-COPY ../../../ML-sem/services/ml_service/pyproject.toml uv.lock ./
+COPY pyproject.toml uv.lock ./
+COPY services/ml_service/pyproject.toml services/ml_service/pyproject.toml
 
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev --no-install-project
+    uv sync --frozen --no-dev --package ml --no-install-project
 
 FROM python:3.12-slim-bookworm
 
@@ -15,7 +16,7 @@ WORKDIR /app
 
 COPY --from=builder /app/.venv /app/.venv
 
-COPY . .
+COPY services/ml_service/app ./app
 
 ENV PATH="/app/.venv/bin:$PATH"
 

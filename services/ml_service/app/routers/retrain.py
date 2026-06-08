@@ -19,7 +19,7 @@ router = APIRouter(tags=["Retrain"])
 )
 async def retrain_model(
     dataset: UploadFile = File(..., description="CSV как `train_dataset.csv`"),
-):
+) -> RetrainResponse:
     logger.info("Retrain request received: filename={}", dataset.filename)
     suffix = Path(dataset.filename or "train_dataset.csv").suffix or ".csv"
     with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:

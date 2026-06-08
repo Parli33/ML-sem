@@ -14,7 +14,7 @@ router = APIRouter(tags=["Prediction"])
     response_model=PredictResponse,
     summary="Возвращает словарь в виде: болезнь:вероятность ее наличия",
 )
-async def predict_risk(request: PredictRequest):
+async def predict_risk(request: PredictRequest) -> PredictResponse:
     logger.info("Predict request received")
     pairs = predict_all(request)
     predictions = [f"{model}:{probability}" for model, probability in pairs]
