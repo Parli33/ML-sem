@@ -8,7 +8,7 @@ from loguru import logger
 class _InterceptHandler(logging.Handler):
     def emit(self, record: logging.LogRecord) -> None:
         try:
-            level = logger.level(record.levelname).name
+            level: str | int = logger.level(record.levelname).name
         except Exception:
             level = record.levelno
 

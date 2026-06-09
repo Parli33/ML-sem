@@ -26,6 +26,8 @@ def predict() -> str:
     result: dict[str, Any] | None = None
     if form.validate_on_submit():
         payload = form.to_payload()
+        user = cast(User, current_user)
+        logger.info("Prediction requested user_id=%s", user.id)
         try:
             result = request_prediction(
                 current_app.config["ML_API_URL"],
@@ -33,11 +35,17 @@ def predict() -> str:
                 timeout=float(current_app.config["ML_API_TIMEOUT"]),
             )
         except MlApiError as error:
-            logger.error("Prediction request failed: %s", error)
+            logger.error(
+                "Prediction request failed user_id=%s error=%s", user.id, error
+            )
             flash(str(error), "danger")
         else:
-            user = cast(User, current_user)
-            save_prediction(user.id, payload, result)
+            prediction = save_prediction(user.id, payload, result)
+            logger.info(
+                "Prediction completed user_id=%s prediction_id=%s",
+                user.id,
+                prediction.id,
+            )
             flash("Предсказание сохранено в истории.", "success")
 
     return render_template("predictions/form.html", form=form, result=result)
@@ -48,4 +56,5 @@ def predict() -> str:
 def history() -> str:
     user = cast(User, current_user)
     predictions = get_prediction_history(user.id)
+    logger.info("History page opened user_id=%s count=%s", user.id, len(predictions))
     return render_template("predictions/history.html", predictions=predictions)

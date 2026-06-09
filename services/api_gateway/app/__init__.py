@@ -34,6 +34,11 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
     app.register_blueprint(main_blueprint)
     app.register_blueprint(auth_blueprint)
     app.add_template_filter(format_prediction, "format_prediction")
+    app.logger.info(
+        "Flask application initialized database=%s ml_api=%s",
+        app.config["SQLALCHEMY_DATABASE_URI"].split("@")[-1],
+        app.config["ML_API_URL"],
+    )
 
     return app
 
