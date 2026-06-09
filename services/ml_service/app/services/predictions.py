@@ -11,6 +11,15 @@ from app.schemas.predict import PredictRequest
 
 MODELS: dict[str, LoadedModel] = {}
 REGION_DATA: dict[str, dict[str, float]] = {}
+MODEL_ORDER: dict[str, int] = {
+    "general": 0,
+    "ah": 1,
+    "angina": 2,
+    "arrhythmia_or_ihd": 3,
+    "heart_failure": 4,
+    "mi": 5,
+    "stroke": 6,
+}
 
 
 def load_region_data(path: Path) -> None:
@@ -47,7 +56,7 @@ def predict_all(request: PredictRequest) -> list[tuple[str, float]]:
         prob = float(loaded.model.predict_proba(pool)[0][1])
         out.append((name, prob))
 
-    out.sort(key=lambda x: x[0])
+    out.sort(key=lambda item: (MODEL_ORDER.get(item[0], len(MODEL_ORDER)), item[0]))
     logger.info(
         "Predicted {} models for region={}",
         len(out),

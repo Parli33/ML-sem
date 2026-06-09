@@ -7,6 +7,9 @@ MODEL_NAMES: dict[str, str] = {
     "mi": "Инфаркт миокарда",
     "stroke": "Инсульт",
 }
+MODEL_ORDER: dict[str, int] = {
+    model_code: position for position, model_code in enumerate(MODEL_NAMES)
+}
 
 
 def format_prediction(value: object) -> str:
@@ -21,3 +24,14 @@ def format_prediction(value: object) -> str:
     except ValueError:
         return f"{model_name}: вероятность {probability_text}"
     return f"{model_name}: вероятность {probability:.1%}"
+
+
+def sort_predictions(values: object) -> list[object]:
+    if not isinstance(values, list):
+        return []
+
+    def sort_key(value: object) -> tuple[int, str]:
+        model_code = str(value).partition(":")[0]
+        return MODEL_ORDER.get(model_code, len(MODEL_ORDER)), model_code
+
+    return sorted(values, key=sort_key)

@@ -15,7 +15,7 @@
             <div class="accordion-body">
               <h3 class="h6">Результат</h3>
               <ul>
-                {% for prediction in item.prediction.predictions %}
+                {% for prediction in item.prediction.predictions | sort_predictions %}
                   <li>{{ prediction | format_prediction }}</li>
                 {% endfor %}
               </ul>

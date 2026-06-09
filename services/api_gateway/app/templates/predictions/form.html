@@ -7,7 +7,7 @@
     <div class="alert alert-success">
       <h2 class="h5">Результат, версия модели {{ result.model_version }}</h2>
       <ul class="mb-0">
-        {% for prediction in result.predictions %}
+        {% for prediction in result.predictions | sort_predictions %}
           <li>{{ prediction | format_prediction }}</li>
         {% endfor %}
       </ul>
