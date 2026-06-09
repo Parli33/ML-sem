@@ -3,6 +3,7 @@
 {% block content %}
   <div class="p-5 bg-white rounded shadow-sm">
     <h1 class="h2">Добро пожаловать, {{ current_user.username }}!</h1>
-    <p class="mb-0">Вы вошли в защищённую часть Flask-приложения.</p>
+    <p>Вы вошли в защищённую часть Flask-приложения.</p>
+    <a class="btn btn-primary" href="{{ url_for('main.predict') }}">Получить предсказание</a>
   </div>
 {% endblock %}

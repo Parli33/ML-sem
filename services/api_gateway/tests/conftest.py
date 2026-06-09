@@ -17,6 +17,7 @@ def app(tmp_path: Path) -> Iterator[Flask]:
             "TESTING": True,
             "WTF_CSRF_ENABLED": False,
             "SQLALCHEMY_DATABASE_URI": f"sqlite:///{database_path}",
+            "ML_API_URL": "http://ml-api.test",
         }
     )
 
