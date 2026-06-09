@@ -4,7 +4,7 @@ from typing import Any, cast
 from flask import Blueprint, current_app, flash, render_template
 from flask_login import current_user, login_required
 
-from app.infrastructure.ml_api import MlApiError, request_prediction
+from app.infrastructure.ml_api import MlApiError, request_model_info, request_prediction
 from app.infrastructure.models import User
 from app.services.predictions import get_prediction_history, save_prediction
 from app.web.forms import PredictionForm
@@ -16,7 +16,15 @@ main_blueprint = Blueprint("main", __name__)
 @main_blueprint.get("/")
 @login_required
 def index() -> str:
-    return render_template("index.html")
+    model_info: dict[str, Any] | None = None
+    try:
+        model_info = request_model_info(
+            current_app.config["ML_API_URL"],
+            timeout=float(current_app.config["ML_API_TIMEOUT"]),
+        )
+    except MlApiError as error:
+        logger.warning("Failed to load model info error=%s", error)
+    return render_template("index.html", model_info=model_info)
 
 
 @main_blueprint.route("/predict", methods=["GET", "POST"])

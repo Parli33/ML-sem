@@ -6,4 +6,17 @@
     <p>Вы успешно авторизовались.</p>
     <a class="btn btn-primary" href="{{ url_for('main.predict') }}">Получить предсказание</a>
   </div>
+
+  <div class="card mt-4">
+    <div class="card-body">
+      <h2 class="h4">Информация о модели</h2>
+      {% if model_info %}
+        <p class="mb-1"><strong>Название:</strong> {{ model_info.name }}</p>
+        <p class="mb-1"><strong>Версия:</strong> {{ model_info.version }}</p>
+        <p class="mb-0"><strong>Загруженные модели:</strong> {{ model_info.models | join(", ") }}</p>
+      {% else %}
+        <div class="alert alert-warning mb-0">Информация о модели сейчас недоступна.</div>
+      {% endif %}
+    </div>
+  </div>
 {% endblock %}

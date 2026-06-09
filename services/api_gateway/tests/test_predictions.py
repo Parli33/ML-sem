@@ -35,6 +35,49 @@ def register_and_login(client: FlaskClient, username: str = "student") -> None:
     )
 
 
+def test_index_displays_model_info(app: Flask, monkeypatch: Any) -> None:
+    client = app.test_client()
+    register_and_login(client)
+
+    def fake_get(*args: Any, **kwargs: Any) -> httpx.Response:
+        request = httpx.Request("GET", "http://ml-api.test/model-info")
+        return httpx.Response(
+            200,
+            request=request,
+            json={
+                "name": "Cardiovascular disease risk models",
+                "version": "1.0.0",
+                "models": ["general", "ah"],
+                "feature_types": {"age": "<class 'int'>"},
+            },
+        )
+
+    monkeypatch.setattr(httpx, "get", fake_get)
+    response = client.get("/")
+
+    assert response.status_code == 200
+    assert b"Cardiovascular disease risk models" in response.data
+    assert b"1.0.0" in response.data
+    assert b"general, ah" in response.data
+
+
+def test_index_works_when_model_info_is_unavailable(
+    app: Flask,
+    monkeypatch: Any,
+) -> None:
+    client = app.test_client()
+    register_and_login(client)
+
+    def failing_get(*args: Any, **kwargs: Any) -> httpx.Response:
+        raise httpx.ConnectError("unavailable")
+
+    monkeypatch.setattr(httpx, "get", failing_get)
+    response = client.get("/")
+
+    assert response.status_code == 200
+    assert "Информация о модели сейчас недоступна".encode() in response.data
+
+
 def test_prediction_is_saved_and_rendered(
     app: Flask,
     monkeypatch: Any,

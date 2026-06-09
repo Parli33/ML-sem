@@ -11,6 +11,49 @@ class MlApiError(RuntimeError):
     pass
 
 
+def request_model_info(base_url: str, *, timeout: float) -> dict[str, Any]:
+    url = f"{base_url.rstrip('/')}/model-info"
+    started_at = monotonic()
+    logger.info("Requesting model info from ML API url=%s", url)
+    try:
+        response = httpx.get(url, timeout=timeout)
+        response.raise_for_status()
+    except httpx.HTTPStatusError as error:
+        logger.error(
+            "ML API rejected model info request url=%s status=%s duration_ms=%.1f",
+            url,
+            error.response.status_code,
+            (monotonic() - started_at) * 1000,
+        )
+        raise MlApiError(
+            f"ML API отклонил запрос информации о модели: HTTP "
+            f"{error.response.status_code}"
+        ) from error
+    except httpx.RequestError as error:
+        logger.error(
+            "ML API model info request failed url=%s duration_ms=%.1f error=%s",
+            url,
+            (monotonic() - started_at) * 1000,
+            error,
+        )
+        raise MlApiError("Информация о модели сейчас недоступна") from error
+
+    try:
+        data = response.json()
+    except ValueError as error:
+        logger.error("ML API returned invalid model info JSON url=%s", url)
+        raise MlApiError("ML API вернул некорректную информацию о модели") from error
+    if not isinstance(data, dict):
+        logger.error("ML API returned unexpected model info response type url=%s", url)
+        raise MlApiError("ML API вернул некорректную информацию о модели")
+    logger.info(
+        "ML API model info request completed status=%s duration_ms=%.1f",
+        response.status_code,
+        (monotonic() - started_at) * 1000,
+    )
+    return data
+
+
 def request_prediction(
     base_url: str,
     payload: dict[str, Any],
