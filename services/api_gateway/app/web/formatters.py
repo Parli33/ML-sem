@@ -1,3 +1,7 @@
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
+
+
 MODEL_NAMES: dict[str, str] = {
     "general": "Общий риск",
     "ah": "Артериальная гипертензия",
@@ -35,3 +39,9 @@ def sort_predictions(values: object) -> list[object]:
         return MODEL_ORDER.get(model_code, len(MODEL_ORDER)), model_code
 
     return sorted(values, key=sort_key)
+
+
+def format_local_datetime(value: datetime, timezone_name: str) -> str:
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=timezone.utc)
+    return value.astimezone(ZoneInfo(timezone_name)).strftime("%d.%m.%Y %H:%M")

@@ -27,6 +27,7 @@ services:
       SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY in .env}
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-ml_user}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@db:5432/${POSTGRES_DB:-ml_sem}
       ML_API_URL: http://fastapi:8000
+      APP_TIMEZONE: ${APP_TIMEZONE:-Asia/Krasnoyarsk}
     depends_on:
       db:
         condition: service_healthy
