@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Главная{% endblock %}
+{% block content %}
+  <div class="p-5 bg-white rounded shadow-sm">
+    <h1 class="h2">Добро пожаловать, {{ current_user.username }}!</h1>
+    <p>Вы успешно авторизовались.</p>
+    <a class="btn btn-primary" href="{{ url_for('main.predict') }}">Получить предсказание</a>
+  </div>
+{% endblock %}

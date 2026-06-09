@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Предсказание{% endblock %}
+{% block content %}
+  <h1 class="h2 mb-4">Оценка риска заболеваний</h1>
+
+  {% if result %}
+    <div class="alert alert-success">
+      <h2 class="h5">Результат, версия модели {{ result.model_version }}</h2>
+      <ul class="mb-0">
+        {% for prediction in result.predictions | sort_predictions %}
+          <li>{{ prediction | format_prediction }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <form method="post" class="bg-white p-4 rounded shadow-sm">
+    {{ form.hidden_tag() }}
+    <h2 class="h4">Основные данные</h2>
+    <div class="row">
+      {% for field in [form.gender, form.age, form.height, form.weight, form.hip_measurement, form.alcohol, form.profession, form.region] %}
+        <div class="col-md-6 mb-3">
+          {{ field.label(class="form-label") }}
+          {{ field(class="form-select" if field.type == "SelectField" else "form-control") }}
+          {% for error in field.errors %}<div class="text-danger">{{ error }}</div>{% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+
+    <h2 class="h4 mt-3">Лабораторные показатели</h2>
+    <div class="row">
+      {% for field in [form.glucose, form.cholesterol, form.non_hdl_cholesterol, form.vldl_cholesterol, form.hdl_cholesterol, form.ldl_cholesterol, form.apolipoprotein_a, form.apolipoprotein_b, form.triglycerides] %}
+        <div class="col-md-4 mb-3">
+          {{ field.label(class="form-label") }}
+          {{ field(class="form-control") }}
+          {% for error in field.errors %}<div class="text-danger">{{ error }}</div>{% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+
+    <h2 class="h4 mt-3">История заболеваний</h2>
+    <div class="row">
+      {% for field in [form.stroke, form.stroke_year, form.heart_failure, form.heart_failure_year, form.cad_chd_ihd, form.cad_chd_ihd_year, form.angine, form.angine_year, form.myocardial_infarction, form.myocardial_infarction_year, form.arterial_hypertension, form.arterial_hypertension_year] %}
+        <div class="col-md-6 mb-3">
+          {{ field.label(class="form-label") }}
+          {{ field(class="form-select" if field.type == "SelectField" else "form-control") }}
+          {% for error in field.errors %}<div class="text-danger">{{ error }}</div>{% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+    {{ form.submit(class="btn btn-primary") }}
+  </form>
+{% endblock %}

@@ -19,5 +19,5 @@ dev = [
     "uvicorn>=0.46.0",
 ]
 
-[tool.uv]
-workspaces = { members = ["apps/*", "libs/*"] }
+[tool.uv.workspace]
+members = ["services/api_gateway", "services/ml_service"]

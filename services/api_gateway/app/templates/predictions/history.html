@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}История предсказаний{% endblock %}
+{% block content %}
+  <h1 class="h2 mb-4">История предсказаний</h1>
+  {% if predictions %}
+    <div class="accordion" id="prediction-history">
+      {% for item in predictions %}
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#prediction-{{ item.id }}">
+              Запрос #{{ item.id }} — {{ item.created_at | local_datetime }}
+            </button>
+          </h2>
+          <div id="prediction-{{ item.id }}" class="accordion-collapse collapse" data-bs-parent="#prediction-history">
+            <div class="accordion-body">
+              <h3 class="h6">Результат</h3>
+              <ul>
+                {% for prediction in item.prediction.predictions | sort_predictions %}
+                  <li>{{ prediction | format_prediction }}</li>
+                {% endfor %}
+              </ul>
+              <h3 class="h6">Входные данные</h3>
+              <pre class="mb-0">{{ item.input_data | tojson(indent=2) }}</pre>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info">История пока пуста.</div>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,58 @@
+services:
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ml_sem}
+      POSTGRES_USER: ${POSTGRES_USER:-ml_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-ml_user} -d ${POSTGRES_DB:-ml_sem}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+  flask:
+    build:
+      context: .
+      dockerfile: services/api_gateway/Dockerfile
+    environment:
+      SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY in .env}
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-ml_user}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@db:5432/${POSTGRES_DB:-ml_sem}
+      ML_API_URL: http://fastapi:8000
+      APP_TIMEZONE: ${APP_TIMEZONE:-Asia/Krasnoyarsk}
+    depends_on:
+      db:
+        condition: service_healthy
+      fastapi:
+        condition: service_healthy
+    ports:
+      - "5000:5000"
+
+  fastapi:
+    build:
+      context: .
+      dockerfile: services/ml_service/Dockerfile
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "8000:8000"
+
+volumes:
+  postgres_data:

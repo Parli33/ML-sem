@@ -1,0 +1,70 @@
+default_install_hook_types:
+  - pre-commit
+  - commit-msg
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: "v6.0.0"
+    hooks:
+      - id: check-added-large-files
+      - id: check-toml
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+  - repo: https://github.com/abravalheri/validate-pyproject
+    rev: "v0.25"
+    hooks:
+      - id: validate-pyproject
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.8
+    hooks:
+      - id: ruff-check
+        args: [ --fix, --unsafe-fixes, --show-fixes ]
+      - id: ruff-format
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.19.1
+    hooks:
+      - id: mypy
+        name: mypy (Flask)
+        args:
+          [
+            --strict,
+            --disable-error-code=import-untyped,
+            --disable-error-code=name-defined,
+            --disable-error-code=misc,
+            --disable-error-code=untyped-decorator,
+            services/api_gateway/app,
+          ]
+        additional_dependencies:
+          - flask>=3.1.3
+          - flask-login>=0.6.3
+          - flask-migrate>=4.1.0
+          - flask-sqlalchemy>=3.1.1
+          - flask-wtf>=1.2.2
+          - httpx>=0.28.1
+          - psycopg[binary]>=3.3.3
+          - sqlalchemy>=2.0.0
+          - types-WTForms
+        pass_filenames: false
+      - id: mypy
+        name: mypy (FastAPI)
+        args: [--strict, --disable-error-code=import-untyped, services/ml_service/app]
+        additional_dependencies:
+          - catboost>=1.2.10
+          - fastapi>=0.135.3
+          - loguru>=0.7.3
+          - numpy>=2.4.4
+          - pandas>=3.0.2
+          - pandas-stubs
+          - pydantic>=2.12.5
+          - pydantic-settings>=2.13.1
+          - scikit-learn>=1.8.0
+        pass_filenames: false
+
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v4.13.9
+    hooks:
+      - id: commitizen
+        stages: [ commit-msg ]
