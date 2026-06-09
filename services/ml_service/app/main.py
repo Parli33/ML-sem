@@ -6,10 +6,9 @@ from loguru import logger
 
 from app.config import settings
 from app.logging import setup_logging
+from app.routers.predictions import router as predictions_router
 from app.schemas.model_info import ModelInfoResponse
 from app.schemas.predict import PredictRequest
-from app.routers.predictions import router as predictions_router
-from app.routers.retrain import router as retrain_router
 from app.services.predictions import MODELS, load_all_models, load_region_data
 
 
@@ -30,7 +29,6 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 app = FastAPI(title="ML Service", lifespan=lifespan)
 
 app.include_router(predictions_router)
-app.include_router(retrain_router)
 
 
 @app.get("/health")
