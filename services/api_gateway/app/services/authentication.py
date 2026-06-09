@@ -1,4 +1,5 @@
 import logging
+from typing import cast
 
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -34,8 +35,11 @@ def register_user(username: str, password: str) -> User | None:
 def authenticate_user(username: str, password: str) -> User | None:
     normalized_username = username.strip()
     try:
-        user = db.session.scalar(
-            db.select(User).where(User.username == normalized_username)
+        user = cast(
+            User | None,
+            db.session.scalar(
+                db.select(User).where(User.username == normalized_username)
+            ),
         )
     except SQLAlchemyError:
         db.session.rollback()

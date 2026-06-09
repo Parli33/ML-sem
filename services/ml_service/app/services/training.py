@@ -445,7 +445,7 @@ def train_models(
     for t in disease_targets:
         train_specs.append((t, df_work[t].astype(int)))
 
-    metrics_rows: list[dict] = []
+    metrics_rows: list[dict[str, object]] = []
 
     for target_name, y in train_specs:
         feature_cols = [*base_features, *interaction_features]

@@ -30,8 +30,11 @@ repos:
         name: mypy (Flask)
         args:
           [
+            --strict,
             --disable-error-code=import-untyped,
             --disable-error-code=name-defined,
+            --disable-error-code=misc,
+            --disable-error-code=untyped-decorator,
             services/api_gateway/app,
           ]
         additional_dependencies:
@@ -47,7 +50,7 @@ repos:
         pass_filenames: false
       - id: mypy
         name: mypy (FastAPI)
-        args: [--disable-error-code=import-untyped, services/ml_service/app]
+        args: [--strict, --disable-error-code=import-untyped, services/ml_service/app]
         additional_dependencies:
           - catboost>=1.2.10
           - fastapi>=0.135.3

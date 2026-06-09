@@ -1,9 +1,14 @@
+from typing import Any
+
+
 DIVIDERS = {"вес": 70.0, "возраст": 50.0, "имт": 30.0}
 
 
 def transform_request_to_vector(
-    request_data: dict, region_stats: dict, feature_order: list
-):
+    request_data: dict[str, Any],
+    region_stats: dict[str, float],
+    feature_order: list[str],
+) -> list[Any]:
     age = float(request_data["age"])
     weight = float(request_data["weight"])
     height = float(request_data["height"])
@@ -32,7 +37,7 @@ def transform_request_to_vector(
 
     pool.update(region_stats)
 
-    final_vector = []
+    final_vector: list[Any] = []
     for col in feature_order:
         if col in pool:
             final_vector.append(pool[col])
